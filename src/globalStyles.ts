@@ -23,6 +23,20 @@ export default createGlobalStyle`
     text-decoration-color: var(--selection-decoration, currentColor);
   }
 
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-alt);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-fg-alt);
+
+    &:hover {
+      background: var(--color-fg);
+    }
+  }
+
   * {
     margin: 0;
     padding: 0;
