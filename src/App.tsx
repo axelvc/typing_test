@@ -1,7 +1,7 @@
 import Challenge from './components/Challenge/Challenge'
 import Header from './components/Header/Header'
 
-function App() {
+export default function App() {
   return (
     <>
       <Header />
@@ -9,5 +9,3 @@ function App() {
     </>
   )
 }
-
-export default App

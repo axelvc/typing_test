@@ -1,6 +1,6 @@
 import * as S from './Header.style'
 
-function Header() {
+export default function Header() {
   return (
     <S.Header>
       <S.Button>15s</S.Button>
@@ -10,5 +10,3 @@ function Header() {
     </S.Header>
   )
 }
-
-export default Header

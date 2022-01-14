@@ -2,7 +2,7 @@ import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
 
-function Challenge() {
+export default function Challenge() {
   return (
     <S.Container>
       <S.Input type="text" />
@@ -103,5 +103,3 @@ function Challenge() {
     </S.Container>
   )
 }
-
-export default Challenge
