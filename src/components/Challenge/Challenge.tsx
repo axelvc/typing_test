@@ -1,8 +1,27 @@
+import { useEffect, useState } from 'react'
+
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
 
 export default function Challenge() {
+  const [capsLock, setCapsLock] = useState(false)
+
+  useEffect(() => {
+    let firstCheck = true
+
+    function checkCapsLock(ev: KeyboardEvent) {
+      if (ev.key === 'CapsLock' || firstCheck) {
+        setCapsLock(ev.getModifierState('CapsLock'))
+        firstCheck = false
+      }
+    }
+
+    window.addEventListener('keyup', checkCapsLock)
+
+    return () => window.removeEventListener('keyup', checkCapsLock)
+  }, [])
+
   return (
     <S.Container>
       <S.Input type="text" />
@@ -64,7 +83,7 @@ export default function Challenge() {
         <S.ResetButton>
           <ResetIcon className="icon" />
         </S.ResetButton>
-        <S.CapsBox>
+        <S.CapsBox style={{ opacity: capsLock ? 1 : 0 }}>
           CAPS LOCK
           <LockIcon className="icon" />
         </S.CapsBox>

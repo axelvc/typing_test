@@ -104,6 +104,7 @@ export const CapsBox = styled(DetailBox)`
   justify-self: flex-end;
   color: var(--color-error);
   border-color: var(--color-error);
+  transition: 150ms opacity ease-in;
 `
 
 /* --------------------------------- results -------------------------------- */
