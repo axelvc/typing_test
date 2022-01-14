@@ -20,6 +20,7 @@ export default createGlobalStyle`
   ::selection {
     color: var(--selection-fg, var(--color-bg));
     background: var(--selection-bg, var(--color-main));
+    text-decoration-color: var(--selection-decoration, currentColor);
   }
 
   * {
@@ -51,6 +52,13 @@ export default createGlobalStyle`
   }
 
   #root {
-    padding: var(--space-lg)
+    max-width: 1000px;
+    padding: var(--space-lg);
+    margin: auto;
+  }
+
+  .icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
   }
 `
