@@ -17,12 +17,20 @@ export const Input = styled.input`
 `
 
 export const Text = styled.p`
+  --lines-to-shown: 3;
+  --font-size: 3rem;
+  --line-height: calc(var(--font-size) * 2);
+  --max-height: calc(var(--line-height) * var(--lines-to-shown));
+
   display: flex;
-  gap: 1.5ch 1ch;
+  gap: 0 1ch;
   flex-wrap: wrap;
-  font-size: 3rem;
-  user-select: none;
+  max-height: var(--max-height);
+  overflow: hidden;
   color: var(--color-fg-alt);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  user-select: none;
 `
 
 const letterColors = {
