@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
@@ -6,6 +6,8 @@ import * as S from './Challenge.style'
 
 export default function Challenge() {
   const [capsLock, setCapsLock] = useState(false)
+  const [textFocused, setTextFoucused] = useState(true)
+  const inputBox = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let firstCheck = true
@@ -22,57 +24,83 @@ export default function Challenge() {
     return () => window.removeEventListener('keyup', checkCapsLock)
   }, [])
 
+  useEffect(() => {
+    if (textFocused) return () => {}
+
+    function focusText(ev: KeyboardEvent) {
+      const isSpecial = ev.ctrlKey || ev.metaKey || ev.altKey || ev.key.length > 1
+
+      if (isSpecial) return
+
+      ev.preventDefault()
+      inputBox.current?.focus()
+    }
+
+    document.documentElement.addEventListener('keydown', focusText)
+    return () => document.documentElement.removeEventListener('keydown', focusText)
+  }, [textFocused])
+
   return (
     <S.Container>
-      <S.Input type="text" />
+      <S.TextBox textFocused={textFocused}>
+        <S.Input
+          type="text"
+          autoFocus
+          ref={inputBox}
+          onFocus={() => setTextFoucused(true)}
+          onBlur={() => setTextFoucused(false)}
+        />
 
-      <S.Text>
-        <span>
-          <S.Letter type="correct">O</S.Letter>
-          <S.Letter type="correct">n</S.Letter>
-          <S.Letter type="correct">e</S.Letter>
-        </span>
-        <span>
-          <S.Letter type="correct">m</S.Letter>
-          <S.Letter type="correct">o</S.Letter>
-          <S.Letter type="correct">r</S.Letter>
-          <S.Letter type="correct">n</S.Letter>
-          <S.Letter type="correct">i</S.Letter>
-          <S.Letter type="missed">n</S.Letter>
-          <S.Letter type="missed">g</S.Letter>
-        </span>
-        <span>
-          <S.Letter type="correct">w</S.Letter>
-          <S.Letter type="correct">h</S.Letter>
-          <S.Letter type="fixed">e</S.Letter>
-          <S.Letter type="incorrect">n</S.Letter>
-        </span>
-        <span>
-          <S.Letter type="correct">G</S.Letter>
-          <S.Letter type="correct">r</S.Letter>
-          <S.Letter type="correct">e</S.Letter>
-          <S.Letter type="incorrect">g</S.Letter>
-          <S.Letter type="incorrect">o</S.Letter>
-          <S.Letter type="incorrect">r</S.Letter>
-        </span>
-        <span>
-          <S.Letter current>S</S.Letter>
-          <S.Letter>a</S.Letter>
-          <S.Letter>m</S.Letter>
-          <S.Letter>s</S.Letter>
-          <S.Letter>a</S.Letter>
-        </span>
+        <S.Instructions textFocused={textFocused}>Click here or type any key to focus the text</S.Instructions>
 
-        <span>woke</span>
-        <span>from</span>
-        <span>troubled</span>
-        <span>dreams</span>
-        <span>he</span>
-        <span>found</span>
-        <span>himself</span>
-        <span>transported</span>
-        <span>to</span>
-      </S.Text>
+        <S.Text onClick={() => inputBox.current?.focus()} textFocused={textFocused}>
+          <span>
+            <S.Char type="correct">O</S.Char>
+            <S.Char type="correct">n</S.Char>
+            <S.Char type="correct">e</S.Char>
+          </span>
+          <span>
+            <S.Char type="correct">m</S.Char>
+            <S.Char type="correct">o</S.Char>
+            <S.Char type="correct">r</S.Char>
+            <S.Char type="correct">n</S.Char>
+            <S.Char type="correct">i</S.Char>
+            <S.Char type="missed">n</S.Char>
+            <S.Char type="missed">g</S.Char>
+          </span>
+          <span>
+            <S.Char type="correct">w</S.Char>
+            <S.Char type="correct">h</S.Char>
+            <S.Char type="fixed">e</S.Char>
+            <S.Char type="incorrect">n</S.Char>
+          </span>
+          <span>
+            <S.Char type="correct">G</S.Char>
+            <S.Char type="correct">r</S.Char>
+            <S.Char type="correct">e</S.Char>
+            <S.Char type="incorrect">g</S.Char>
+            <S.Char type="incorrect">o</S.Char>
+            <S.Char type="incorrect">r</S.Char>
+          </span>
+          <span>
+            <S.Char current>S</S.Char>
+            <S.Char>a</S.Char>
+            <S.Char>m</S.Char>
+            <S.Char>s</S.Char>
+            <S.Char>a</S.Char>
+          </span>
+
+          <span>woke</span>
+          <span>from</span>
+          <span>troubled</span>
+          <span>dreams</span>
+          <span>he</span>
+          <span>found</span>
+          <span>himself</span>
+          <span>transported</span>
+          <span>to</span>
+        </S.Text>
+      </S.TextBox>
 
       <S.Line>
         <div style={{ width: '70%' }} />

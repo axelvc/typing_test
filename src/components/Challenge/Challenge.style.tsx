@@ -8,7 +8,30 @@ export const Container = styled.section`
   gap: var(--space-lg);
 `
 
-/* ---------------------------------- text ---------------------------------- */
+/* ---------------------------------- textbox ---------------------------------- */
+interface TextBoxProps {
+  textFocused: boolean
+}
+
+export const TextBox = styled.div<TextBoxProps>`
+  position: relative;
+  transition: 200ms ease-out;
+`
+
+export const Instructions = styled.p<TextBoxProps>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 500;
+  font-size: 1.25rem;
+  transition: inherit;
+  filter: ${p => p.textFocused && 'opacity(0)'};
+`
+
 export const Input = styled.input`
   position: absolute;
   width: 0;
@@ -16,7 +39,7 @@ export const Input = styled.input`
   opacity: 0;
 `
 
-export const Text = styled.p`
+export const Text = styled.p<TextBoxProps>`
   --lines-to-shown: 3;
   --font-size: 3rem;
   --line-height: calc(var(--font-size) * 2);
@@ -31,16 +54,18 @@ export const Text = styled.p`
   font-size: var(--font-size);
   line-height: var(--line-height);
   user-select: none;
+  transition: inherit;
+  filter: ${p => !p.textFocused && 'blur(4px) opacity(0.5)'};
 `
 
-const letterColors = {
+const charColors = {
   correct: 'var(--color-main)',
   incorrect: 'var(--color-error)',
   fixed: 'var(--color-fixed)',
 } as const
 
-export const Letter = styled.span<{ type?: 'correct' | 'incorrect' | 'fixed' | 'missed'; current?: boolean }>`
-  color: ${p => p.type && p.type !== 'missed' && letterColors[p.type]};
+export const Char = styled.span<{ type?: 'correct' | 'incorrect' | 'fixed' | 'missed'; current?: boolean }>`
+  color: ${p => p.type && p.type !== 'missed' && charColors[p.type]};
 
   ${p =>
     p.type === 'missed' &&
