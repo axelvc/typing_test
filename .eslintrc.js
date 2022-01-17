@@ -30,5 +30,11 @@ module.exports = {
         json: 'never',
       },
     ],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: ['vite.config.ts', '**/__test__/*', '**/*.spec.ts', '**/*.spec.tsx'],
+      },
+    ],
   },
 }
