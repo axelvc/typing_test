@@ -46,7 +46,6 @@ export const Text = styled.p<TextBoxProps>`
   --max-height: calc(var(--line-height) * var(--lines-to-shown));
 
   display: flex;
-  gap: 0 1ch;
   flex-wrap: wrap;
   max-height: var(--max-height);
   overflow: hidden;
@@ -58,32 +57,39 @@ export const Text = styled.p<TextBoxProps>`
   filter: ${p => !p.textFocused && 'blur(4px) opacity(0.5)'};
 `
 
-const charColors = {
+export type CharType = 'current' | 'correct' | 'incorrect' | 'fixed' | 'missed' | null | undefined
+
+const charColors: Record<Exclude<CharType, 'missed' | null | undefined>, string> = {
+  current: 'var(--color-bg)',
   correct: 'var(--color-main)',
   incorrect: 'var(--color-error)',
   fixed: 'var(--color-fixed)',
 } as const
 
-export const Char = styled.span<{ type?: 'correct' | 'incorrect' | 'fixed' | 'missed'; current?: boolean }>`
+export const Char = styled.span<{ type?: CharType }>`
   color: ${p => p.type && p.type !== 'missed' && charColors[p.type]};
 
   ${p =>
     p.type === 'missed' &&
     css`
-      text-decoration: underline;
-      text-decoration-color: var(--color-error);
+      text-decoration: underline var(--color-error);
       text-underline-offset: 35%;
 
       --selection-decoration: var(--color-error);
     `};
 
   ${p =>
-    p.current &&
+    p.type === 'current' &&
     css`
-      color: var(--color-bg);
       background: var(--color-main);
       border-radius: var(--rounded);
     `}
+`
+
+export const Extra = styled.span`
+  color: var(--color-error);
+  opacity: 0.5;
+  text-decoration: line-through;
 `
 
 /* ---------------------------------- line ---------------------------------- */

@@ -17,6 +17,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
+    'consistent-return': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'import/extensions': [
       'error',

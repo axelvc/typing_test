@@ -1,13 +1,14 @@
-import { useEffect, useState, useRef } from 'react'
+/* eslint-disable react/no-array-index-key */
+import React, { useEffect, useState, useRef } from 'react'
 
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
+import useText from './useText'
 
 export default function Challenge() {
+  /* -------------------------------- caps lock ------------------------------- */
   const [capsLock, setCapsLock] = useState(false)
-  const [textFocused, setTextFoucused] = useState(true)
-  const inputBox = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let firstCheck = true
@@ -23,6 +24,10 @@ export default function Challenge() {
 
     return () => window.removeEventListener('keyup', checkCapsLock)
   }, [])
+
+  /* ------------------------------ blur textbox ------------------------------ */
+  const [textFocused, setTextFoucused] = useState(true)
+  const inputBox = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (textFocused) return () => {}
@@ -40,65 +45,76 @@ export default function Challenge() {
     return () => document.documentElement.removeEventListener('keydown', focusText)
   }, [textFocused])
 
+  /* --------------------------------- typing --------------------------------- */
+  const [textState, dispatch] = useText()
+  const inputIdx = textState.inputs.length - 1
+  const currentInput = textState.inputs[inputIdx]
+
+  function handleBackspace(ev: React.KeyboardEvent) {
+    if (ev.key !== 'Backspace' || currentInput !== '') return
+
+    dispatch({ type: 'PREV_WORD', payload: ev.ctrlKey })
+  }
+
+  function getType(char: string, wi: number, ci: number): S.CharType {
+    const inputWord = textState.inputs[wi]
+
+    if (wi > inputIdx) return
+
+    if (wi === inputIdx) {
+      const inputCi = inputWord.length
+
+      if (ci > inputCi) return
+      if (ci === inputCi) return 'current'
+    }
+
+    const inputChar = inputWord[ci]
+
+    if (!inputChar) return 'missed'
+    if (inputChar !== char) return 'incorrect'
+    if (textState.wrongs[wi]?.[ci]) return 'fixed'
+
+    return 'correct'
+  }
+
+  function getExtraChars(word: string[], wi: number): string {
+    const chars = textState.inputs[wi] || ''
+
+    return chars.slice(word.length)
+  }
+
+  function isLastWordChar(word: string[], wi: number): boolean {
+    return wi === inputIdx && currentInput.length >= word.length
+  }
+
   return (
     <S.Container>
-      <S.TextBox textFocused={textFocused}>
+      <S.TextBox textFocused={textFocused} onClick={() => inputBox.current?.focus()}>
         <S.Input
           type="text"
           autoFocus
           ref={inputBox}
+          value={currentInput}
+          onChange={ev => dispatch({ type: 'TYPE', payload: ev.target.value })}
+          onKeyDown={ev => handleBackspace(ev)}
           onFocus={() => setTextFoucused(true)}
           onBlur={() => setTextFoucused(false)}
         />
 
         <S.Instructions textFocused={textFocused}>Click here or type any key to focus the text</S.Instructions>
 
-        <S.Text onClick={() => inputBox.current?.focus()} textFocused={textFocused}>
-          <span>
-            <S.Char type="correct">O</S.Char>
-            <S.Char type="correct">n</S.Char>
-            <S.Char type="correct">e</S.Char>
-          </span>
-          <span>
-            <S.Char type="correct">m</S.Char>
-            <S.Char type="correct">o</S.Char>
-            <S.Char type="correct">r</S.Char>
-            <S.Char type="correct">n</S.Char>
-            <S.Char type="correct">i</S.Char>
-            <S.Char type="missed">n</S.Char>
-            <S.Char type="missed">g</S.Char>
-          </span>
-          <span>
-            <S.Char type="correct">w</S.Char>
-            <S.Char type="correct">h</S.Char>
-            <S.Char type="fixed">e</S.Char>
-            <S.Char type="incorrect">n</S.Char>
-          </span>
-          <span>
-            <S.Char type="correct">G</S.Char>
-            <S.Char type="correct">r</S.Char>
-            <S.Char type="correct">e</S.Char>
-            <S.Char type="incorrect">g</S.Char>
-            <S.Char type="incorrect">o</S.Char>
-            <S.Char type="incorrect">r</S.Char>
-          </span>
-          <span>
-            <S.Char current>S</S.Char>
-            <S.Char>a</S.Char>
-            <S.Char>m</S.Char>
-            <S.Char>s</S.Char>
-            <S.Char>a</S.Char>
-          </span>
-
-          <span>woke</span>
-          <span>from</span>
-          <span>troubled</span>
-          <span>dreams</span>
-          <span>he</span>
-          <span>found</span>
-          <span>himself</span>
-          <span>transported</span>
-          <span>to</span>
+        <S.Text textFocused={textFocused}>
+          {textState.words.map((word, wi) => (
+            <span key={wi}>
+              {word.map((char, ci) => (
+                <S.Char key={ci} type={getType(char, wi, ci)}>
+                  {char}
+                </S.Char>
+              ))}
+              {getExtraChars(word, wi) && <S.Extra>{getExtraChars(word, wi)}</S.Extra>}
+              <S.Char type={isLastWordChar(word, wi) ? 'current' : undefined}>&nbsp;</S.Char>
+            </span>
+          ))}
         </S.Text>
       </S.TextBox>
 
