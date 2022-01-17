@@ -13,7 +13,7 @@ interface TextBoxProps {
   textFocused: boolean
 }
 
-export const TextBox = styled.div<TextBoxProps>`
+export const TextBox = styled.div`
   position: relative;
   transition: 200ms ease-out;
 `

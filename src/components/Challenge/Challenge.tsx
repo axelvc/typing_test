@@ -53,6 +53,7 @@ export default function Challenge() {
   function handleBackspace(ev: React.KeyboardEvent) {
     if (ev.key !== 'Backspace' || currentInput !== '') return
 
+    ev.preventDefault()
     dispatch({ type: 'PREV_WORD', payload: ev.ctrlKey })
   }
 
@@ -89,9 +90,10 @@ export default function Challenge() {
 
   return (
     <S.Container>
-      <S.TextBox textFocused={textFocused} onClick={() => inputBox.current?.focus()}>
+      <S.TextBox onClick={() => inputBox.current?.focus()}>
         <S.Input
           type="text"
+          data-testid="challengeInput"
           autoFocus
           ref={inputBox}
           value={currentInput}
@@ -101,18 +103,22 @@ export default function Challenge() {
           onBlur={() => setTextFoucused(false)}
         />
 
-        <S.Instructions textFocused={textFocused}>Click here or type any key to focus the text</S.Instructions>
+        <S.Instructions textFocused={textFocused} data-testid="challengeInstructions">
+          Click here or type any key to focus the text
+        </S.Instructions>
 
-        <S.Text textFocused={textFocused}>
+        <S.Text textFocused={textFocused} data-testid="challengeText">
           {textState.words.map((word, wi) => (
             <span key={wi}>
               {word.map((char, ci) => (
-                <S.Char key={ci} type={getType(char, wi, ci)}>
+                <S.Char key={ci} type={getType(char, wi, ci)} data-testid="challengeChar">
                   {char}
                 </S.Char>
               ))}
               {getExtraChars(word, wi) && <S.Extra>{getExtraChars(word, wi)}</S.Extra>}
-              <S.Char type={isLastWordChar(word, wi) ? 'current' : undefined}>&nbsp;</S.Char>
+              <S.Char type={isLastWordChar(word, wi) ? 'current' : null} data-testid="challengeCharSpace">
+                &nbsp;
+              </S.Char>
             </span>
           ))}
         </S.Text>
