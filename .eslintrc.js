@@ -36,5 +36,7 @@ module.exports = {
         devDependencies: ['vite.config.ts', '**/__test__/*', '**/*.spec.ts', '**/*.spec.tsx'],
       },
     ],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
   },
 }

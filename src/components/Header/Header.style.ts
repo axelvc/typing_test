@@ -9,4 +9,8 @@ export const Header = styled.header`
 
 export const Button = styled(ButtonBase)`
   font-size: 0.875rem;
+
+  &[aria-pressed='true'] {
+    color: var(--color-main);
+  }
 `

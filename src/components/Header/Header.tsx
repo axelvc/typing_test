@@ -1,12 +1,25 @@
+import useTimer from '../../useTimer'
+
 import * as S from './Header.style'
 
+const TIMES = [
+  [15, '15s'],
+  [30, '30s'],
+  [60, '1m'],
+  [120, '2m'],
+] as const
+
 export default function Header() {
+  const timePicked = useTimer(s => s.time)
+  const setTime = useTimer(s => s.setTime)
+
   return (
     <S.Header>
-      <S.Button>15s</S.Button>
-      <S.Button>30s</S.Button>
-      <S.Button>1m</S.Button>
-      <S.Button>2m</S.Button>
+      {TIMES.map(([time, name]) => (
+        <S.Button key={time} aria-pressed={timePicked === time} onClick={() => setTime(time)}>
+          {name}
+        </S.Button>
+      ))}
     </S.Header>
   )
 }
