@@ -88,6 +88,11 @@ export default function Challenge() {
     return wi === inputIdx && currentInput.length >= word.length
   }
 
+  function handleReset() {
+    dispatch({ type: 'RESET' })
+    inputBox.current?.focus()
+  }
+
   return (
     <S.Container>
       <S.TextBox onClick={() => inputBox.current?.focus()}>
@@ -130,7 +135,7 @@ export default function Challenge() {
 
       <S.Details>
         <S.DetailBox>01:51</S.DetailBox>
-        <S.ResetButton>
+        <S.ResetButton title="reset" onClick={() => handleReset()}>
           <ResetIcon className="icon" />
         </S.ResetButton>
         <S.CapsBox style={{ opacity: capsLock ? 1 : 0 }}>

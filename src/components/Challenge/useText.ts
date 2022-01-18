@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { useReducer } from 'react'
 import produce from 'immer'
+import getRandomWords from '../../services/wordService'
 
-type Action = { type: 'TYPE'; payload: string } | { type: 'PREV_WORD'; payload: boolean }
+type Action = { type: 'TYPE'; payload: string } | { type: 'PREV_WORD'; payload: boolean } | { type: 'RESET' }
 
 interface State {
   wrongs: Record<number, Record<number, true>>
@@ -13,9 +14,7 @@ interface State {
 const initialState: State = {
   wrongs: {},
   inputs: [''],
-  words: 'One morning when Gregor Samsa woke from troubled dreams he found himself transported to'
-    .split(' ')
-    .map(w => [...w]),
+  words: getRandomWords(),
 }
 
 function reducer(state: State, aciton: Action): State {
@@ -57,6 +56,10 @@ function reducer(state: State, aciton: Action): State {
         if (isCtrl) {
           d.inputs[d.inputs.length - 1] = ''
         }
+      })
+    case 'RESET':
+      return produce(initialState, d => {
+        d.words = getRandomWords()
       })
     default:
       throw new Error('Unknown action type')

@@ -14,6 +14,15 @@ describe('Challenge component', () => {
     expect(input).toHaveFocus()
   })
 
+  it('should change text when click reset button', () => {
+    const reset = screen.getByRole('button', { name: /reset/i })
+    const textBox = screen.getByTestId('challengeText')
+    const text = textBox.textContent as string
+
+    userEvent.click(reset)
+    expect(textBox.textContent).not.toBe(text)
+  })
+
   describe('bluring', () => {
     it('should focus input on click in the box', () => {
       const input = screen.getByTestId('challengeInput')
