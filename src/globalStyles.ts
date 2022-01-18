@@ -41,20 +41,21 @@ export default createGlobalStyle`
     margin: 0;
     padding: 0;
     letter-spacing: 0.05em;
+    scroll-behavior: smooth;
 
     &:focus-visible {
       outline: 0.125rem solid currentColor;
     }
   }
 
-  ul {
-    list-style: none;
-  }
-
   body {
     color: var(--color-fg);
     background: var(--color-bg);
     font-family: 'IBM Plex Mono', monospace;
+  }
+
+  ul {
+    list-style: none;
   }
 
   button {

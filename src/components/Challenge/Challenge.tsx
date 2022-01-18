@@ -46,12 +46,42 @@ export default function Challenge() {
   }, [textFocused])
 
   /* --------------------------------- typing --------------------------------- */
+  const wordBoxes = useRef<HTMLSpanElement[]>([])
+  const textBox = useRef<HTMLParagraphElement>(null)
   const [textState, dispatch] = useText()
   const inputIdx = textState.inputs.length - 1
   const currentInput = textState.inputs[inputIdx]
 
+  useEffect(() => {
+    const REMAINING_WORDS_LIMIT = 10
+    const totalWords = textState.words.length
+
+    if (totalWords - inputIdx <= REMAINING_WORDS_LIMIT) {
+      dispatch({ type: 'GET_WORDS' })
+    }
+  }, [inputIdx])
+
+  useEffect(() => {
+    const el = wordBoxes.current[inputIdx]
+    const tb = textBox.current
+
+    if (!el || !tb) return
+
+    const height = el.offsetHeight
+    const wordTop = el.offsetTop - tb.scrollTop
+
+    if (wordTop > height) {
+      tb.scrollTop += height
+    }
+  }, [inputIdx])
+
   function handleBackspace(ev: React.KeyboardEvent) {
     if (ev.key !== 'Backspace' || currentInput !== '') return
+
+    const prevWordTop = wordBoxes.current[inputIdx - 1]?.offsetTop || 0
+    const scrollTop = textBox.current?.scrollTop || 0
+
+    if (scrollTop > prevWordTop) return
 
     ev.preventDefault()
     dispatch({ type: 'PREV_WORD', payload: ev.ctrlKey })
@@ -112,9 +142,14 @@ export default function Challenge() {
           Click here or type any key to focus the text
         </S.Instructions>
 
-        <S.Text textFocused={textFocused} data-testid="challengeText">
+        <S.Text textFocused={textFocused} data-testid="challengeText" ref={textBox}>
           {textState.words.map((word, wi) => (
-            <span key={wi}>
+            <span
+              key={wi}
+              ref={el => {
+                wordBoxes.current[wi] = el as HTMLSpanElement
+              }}
+            >
               {word.map((char, ci) => (
                 <S.Char key={ci} type={getType(char, wi, ci)} data-testid="challengeChar">
                   {char}

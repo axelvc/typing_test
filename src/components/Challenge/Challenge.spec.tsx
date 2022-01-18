@@ -23,6 +23,20 @@ describe('Challenge component', () => {
     expect(textBox.textContent).not.toBe(text)
   })
 
+  describe('text box scroll', () => {
+    it.todo('should scroll on typing')
+    it.todo('should not scroll if the prev word is above the text box')
+
+    it('should get new words if is close to the end of the text', () => {
+      const textBox = screen.getByTestId('challengeText')
+      const children = textBox.childElementCount
+
+      userEvent.keyboard(textBox.textContent!.replace(/\s/g, ' '))
+
+      expect(textBox.childElementCount).toBe(children * 2)
+    })
+  })
+
   describe('bluring', () => {
     it('should focus input on click in the box', () => {
       const input = screen.getByTestId('challengeInput')

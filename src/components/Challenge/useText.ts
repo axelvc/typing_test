@@ -3,7 +3,11 @@ import { useReducer } from 'react'
 import produce from 'immer'
 import getRandomWords from '../../services/wordService'
 
-type Action = { type: 'TYPE'; payload: string } | { type: 'PREV_WORD'; payload: boolean } | { type: 'RESET' }
+type Action =
+  | { type: 'TYPE'; payload: string }
+  | { type: 'PREV_WORD'; payload: boolean }
+  | { type: 'RESET' }
+  | { type: 'GET_WORDS' }
 
 interface State {
   wrongs: Record<number, Record<number, true>>
@@ -60,6 +64,10 @@ function reducer(state: State, aciton: Action): State {
     case 'RESET':
       return produce(initialState, d => {
         d.words = getRandomWords()
+      })
+    case 'GET_WORDS':
+      return produce(state, d => {
+        d.words = [...d.words, ...getRandomWords()]
       })
     default:
       throw new Error('Unknown action type')
