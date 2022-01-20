@@ -10,7 +10,7 @@ const TIMES = [
 ] as const
 
 export default function Header() {
-  const timePicked = useTimer(s => s.time)
+  const timePicked = useTimer(s => s.totalTime)
   const setTime = useTimer(s => s.setTime)
 
   return (

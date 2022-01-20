@@ -4,8 +4,12 @@ const STORAGE_KEY = 'typing-time'
 const INITIAL_TIME = 60
 
 interface State {
-  time: number
+  timerId: number
+  totalTime: number
+  leftTime: number
   setTime(time: number): void
+  start(): void
+  reset(): void
 }
 
 function getLocalTime(): number {
@@ -19,10 +23,29 @@ function setLocalTime(time: number) {
 }
 
 export default create<State>(set => ({
-  time: getLocalTime(),
+  timerId: 0,
+  leftTime: getLocalTime(),
+  totalTime: getLocalTime(),
   setTime: time =>
     set(() => {
       setLocalTime(time)
-      return { time }
+      return { totalTime: time, leftTime: time }
+    }),
+  start: () => {
+    const id = window.setInterval(() => {
+      set(s => {
+        if (s.leftTime === 1) clearInterval(id)
+
+        return { leftTime: s.leftTime - 1 }
+      })
+    }, 1000)
+
+    set({ timerId: id })
+  },
+  reset: () =>
+    set(s => {
+      clearInterval(s.timerId)
+
+      return { timerId: 0, leftTime: s.totalTime }
     }),
 }))

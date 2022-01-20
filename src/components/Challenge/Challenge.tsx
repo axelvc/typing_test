@@ -5,6 +5,16 @@ import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
 import useText from './useText'
+import useTimer from '../../useTimer'
+
+function humanTime(time: number) {
+  const MINUTE_IN_SECS = 60
+  const mins = Math.floor(time / MINUTE_IN_SECS)
+  const secs = time % MINUTE_IN_SECS
+  const pad = (s: number) => `${s}`.padStart(2, '0')
+
+  return `${pad(mins)}:${pad(secs)}`
+}
 
 export default function Challenge() {
   /* -------------------------------- caps lock ------------------------------- */
@@ -118,10 +128,40 @@ export default function Challenge() {
     return wi === inputIdx && currentInput.length >= word.length
   }
 
+  /* ---------------------------------- timer --------------------------------- */
+  const timer = useTimer()
+  const lineBox = useRef<HTMLDivElement>(null)
+  const [lineAnimation, setLineAnimation] = useState<Animation | null>(null)
+
+  function handleType(value: string) {
+    dispatch({ type: 'TYPE', payload: value })
+
+    if (timer.timerId) return
+
+    const animation = lineBox.current!.animate([{ width: '100%' }, { width: '0%' }], {
+      duration: timer.leftTime * 1000,
+      easing: 'linear',
+      fill: 'forwards',
+    })
+
+    setLineAnimation(animation)
+    timer.start()
+  }
+
   function handleReset() {
     dispatch({ type: 'RESET' })
-    inputBox.current?.focus()
+    inputBox.current!.focus()
+
+    if (!timer.timerId) return
+
+    timer.reset()
+    textBox.current!.scrollTop = 0
+    lineAnimation!.cancel()
   }
+
+  useEffect(() => {
+    if (timer.timerId) handleReset()
+  }, [timer.totalTime])
 
   return (
     <S.Container>
@@ -132,9 +172,12 @@ export default function Challenge() {
           autoFocus
           ref={inputBox}
           value={currentInput}
-          onChange={ev => dispatch({ type: 'TYPE', payload: ev.target.value })}
-          onKeyDown={ev => handleBackspace(ev)}
-          onFocus={() => setTextFoucused(true)}
+          onChange={ev => timer.leftTime && handleType(ev.target.value)}
+          onKeyDown={ev => timer.leftTime && handleBackspace(ev)}
+          onFocus={ev => {
+            ev.target.setSelectionRange(-1, -1)
+            setTextFoucused(true)
+          }}
           onBlur={() => setTextFoucused(false)}
         />
 
@@ -165,11 +208,11 @@ export default function Challenge() {
       </S.TextBox>
 
       <S.Line>
-        <div style={{ width: '70%' }} />
+        <div ref={lineBox} />
       </S.Line>
 
       <S.Details>
-        <S.DetailBox>01:51</S.DetailBox>
+        <S.DetailBox>{humanTime(timer.leftTime)}</S.DetailBox>
         <S.ResetButton title="reset" onClick={() => handleReset()}>
           <ResetIcon className="icon" />
         </S.ResetButton>
