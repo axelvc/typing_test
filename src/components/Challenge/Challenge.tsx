@@ -148,6 +148,28 @@ export default function Challenge() {
     timer.start()
   }
 
+  /* --------------------------------- results -------------------------------- */
+  const [results, setResults] = useState({ wpm: 0, acc: '', correct: 0, incorrect: 0, fixed: 0, extra: 0, missed: 0 })
+
+  useEffect(() => {
+    if (!timer.timerId) return
+
+    const { inputs, words, wrongs } = textState
+
+    const total = inputs.reduce((a, w) => a + w.length + 1, -1)
+    const wrongRaw = Object.values(wrongs).reduce((a, i) => a + Object.values(i).length, 0)
+    const extra = inputs.reduce((a, w, i) => a + w.slice(words[i].length).length, 0)
+    const missed = inputs.slice(0, -1).reduce((a, w, i) => a + Math.max(words[i].length - w.length, 0), 0)
+    const fixed = inputs.flatMap((w, wi) => [...w].filter((c, ci) => c === words[wi][ci] && wrongs[wi]?.[ci])).length
+
+    const correct = total - wrongRaw
+    const incorrect = wrongRaw - fixed - extra
+    const wpm = correct / 5 / (timer.totalTime / 60)
+    const acc = ((correct * 100) / total).toFixed(2)
+
+    setResults({ wpm, acc, correct, incorrect, fixed, extra, missed })
+  }, [!timer.leftTime])
+
   function handleReset() {
     dispatch({ type: 'RESET' })
     inputBox.current!.focus()
@@ -157,6 +179,7 @@ export default function Challenge() {
     timer.reset()
     textBox.current!.scrollTop = 0
     lineAnimation!.cancel()
+    setResults({ wpm: 0, acc: '', correct: 0, incorrect: 0, fixed: 0, extra: 0, missed: 0 })
   }
 
   useEffect(() => {
@@ -225,31 +248,32 @@ export default function Challenge() {
       <S.Results>
         <S.ResultBox>
           <span>WPM</span>
-          70
+          {results.wpm}
         </S.ResultBox>
         <S.ResultBox>
           <span>ACC</span>
-          94%
+          {results.acc}%
         </S.ResultBox>
 
         <S.ResultBox>
           <span>Correct</span>
-          290
+          {results.correct}
         </S.ResultBox>
         <S.ResultBox>
           <span>Incorrect</span>
-          23
+          {results.incorrect}
         </S.ResultBox>
         <S.ResultBox>
           <span>Fixed</span>
-          32
+          {results.fixed}
         </S.ResultBox>
         <S.ResultBox>
-          <span>Extra</span>6
+          <span>Extra</span>
+          {results.extra}
         </S.ResultBox>
         <S.ResultBox>
           <span>Missed</span>
-          10
+          {results.missed}
         </S.ResultBox>
       </S.Results>
     </S.Container>
