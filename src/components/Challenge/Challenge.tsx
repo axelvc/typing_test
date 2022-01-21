@@ -1,11 +1,11 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState, useRef } from 'react'
+import useText from '../../useText'
+import useTimer from '../../useTimer'
 
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
-import useText from './useText'
-import useTimer from '../../useTimer'
 
 function humanTime(time: number) {
   const MINUTE_IN_SECS = 60
@@ -56,18 +56,18 @@ export default function Challenge() {
   }, [textFocused])
 
   /* --------------------------------- typing --------------------------------- */
+  const text = useText()
+  const inputIdx = text.inputs.length - 1
+  const currentInput = text.inputs[inputIdx]
   const wordBoxes = useRef<HTMLSpanElement[]>([])
   const textBox = useRef<HTMLParagraphElement>(null)
-  const [textState, dispatch] = useText()
-  const inputIdx = textState.inputs.length - 1
-  const currentInput = textState.inputs[inputIdx]
 
   useEffect(() => {
     const REMAINING_WORDS_LIMIT = 10
-    const totalWords = textState.words.length
+    const totalWords = text.words.length
 
     if (totalWords - inputIdx <= REMAINING_WORDS_LIMIT) {
-      dispatch({ type: 'GET_WORDS' })
+      text.getWords()
     }
   }, [inputIdx])
 
@@ -93,12 +93,12 @@ export default function Challenge() {
 
     if (scrollTop > prevWordTop) return
 
-    ev.preventDefault()
-    dispatch({ type: 'PREV_WORD', payload: ev.ctrlKey })
+    if (!ev.ctrlKey) ev.preventDefault()
+    text.prevWord()
   }
 
   function getType(char: string, wi: number, ci: number): S.CharType {
-    const inputWord = textState.inputs[wi]
+    const inputWord = text.inputs[wi]
 
     if (wi > inputIdx) return
 
@@ -113,13 +113,13 @@ export default function Challenge() {
 
     if (!inputChar) return 'missed'
     if (inputChar !== char) return 'incorrect'
-    if (textState.wrongs[wi]?.[ci]) return 'fixed'
+    if (text.wrongs[wi]?.[ci]) return 'fixed'
 
     return 'correct'
   }
 
   function getExtraChars(word: string[], wi: number): string {
-    const chars = textState.inputs[wi] || ''
+    const chars = text.inputs[wi] || ''
 
     return chars.slice(word.length)
   }
@@ -134,7 +134,7 @@ export default function Challenge() {
   const [lineAnimation, setLineAnimation] = useState<Animation | null>(null)
 
   function handleType(value: string) {
-    dispatch({ type: 'TYPE', payload: value })
+    text.type(value)
 
     if (timer.timerId) return
 
@@ -154,7 +154,7 @@ export default function Challenge() {
   useEffect(() => {
     if (!timer.timerId) return
 
-    const { inputs, words, wrongs } = textState
+    const { inputs, words, wrongs } = text
 
     const total = inputs.reduce((a, w) => a + w.length + 1, -1)
     const wrongRaw = Object.values(wrongs).reduce((a, i) => a + Object.values(i).length, 0)
@@ -171,7 +171,7 @@ export default function Challenge() {
   }, [!timer.leftTime])
 
   function handleReset() {
-    dispatch({ type: 'RESET' })
+    text.reset()
     inputBox.current!.focus()
 
     if (!timer.timerId) return
@@ -209,7 +209,7 @@ export default function Challenge() {
         </S.Instructions>
 
         <S.Text textFocused={textFocused} data-testid="challengeText" ref={textBox}>
-          {textState.words.map((word, wi) => (
+          {text.words.map((word, wi) => (
             <span
               key={wi}
               ref={el => {
