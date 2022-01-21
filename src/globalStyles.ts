@@ -67,7 +67,12 @@ export default createGlobalStyle`
   }
 
   #root {
+    display: grid;
+    place-items: center;
+    grid-template-rows: auto 1fr;
     max-width: 1000px;
+    min-height: 100vh;
+    box-sizing: border-box;
     padding: var(--space-lg);
     margin: auto;
   }

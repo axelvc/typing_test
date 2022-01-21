@@ -148,43 +148,19 @@ export default function Challenge() {
     timer.start()
   }
 
-  /* --------------------------------- results -------------------------------- */
-  const [results, setResults] = useState({ wpm: 0, acc: '', correct: 0, incorrect: 0, fixed: 0, extra: 0, missed: 0 })
-
-  useEffect(() => {
-    if (!timer.timerId) return
-
-    const { inputs, words, wrongs } = text
-
-    const total = inputs.reduce((a, w) => a + w.length + 1, -1)
-    const wrongRaw = Object.values(wrongs).reduce((a, i) => a + Object.values(i).length, 0)
-    const extra = inputs.reduce((a, w, i) => a + w.slice(words[i].length).length, 0)
-    const missed = inputs.slice(0, -1).reduce((a, w, i) => a + Math.max(words[i].length - w.length, 0), 0)
-    const fixed = inputs.flatMap((w, wi) => [...w].filter((c, ci) => c === words[wi][ci] && wrongs[wi]?.[ci])).length
-
-    const correct = total - wrongRaw
-    const incorrect = wrongRaw - fixed - extra
-    const wpm = correct / 5 / (timer.totalTime / 60)
-    const acc = ((correct * 100) / total).toFixed(2)
-
-    setResults({ wpm, acc, correct, incorrect, fixed, extra, missed })
-  }, [!timer.leftTime])
+  function resetFocus() {
+    textBox.current!.scrollTop = 0
+    inputBox.current!.focus()
+    lineAnimation?.cancel()
+  }
 
   function handleReset() {
     text.reset()
-    inputBox.current!.focus()
-
-    if (!timer.timerId) return
-
     timer.reset()
-    textBox.current!.scrollTop = 0
-    lineAnimation!.cancel()
-    setResults({ wpm: 0, acc: '', correct: 0, incorrect: 0, fixed: 0, extra: 0, missed: 0 })
+    resetFocus()
   }
 
-  useEffect(() => {
-    if (timer.timerId) handleReset()
-  }, [timer.totalTime])
+  useEffect(resetFocus, [timer.totalTime])
 
   return (
     <S.Container>
@@ -244,38 +220,6 @@ export default function Challenge() {
           <LockIcon className="icon" />
         </S.CapsBox>
       </S.Details>
-
-      <S.Results>
-        <S.ResultBox>
-          <span>WPM</span>
-          {results.wpm}
-        </S.ResultBox>
-        <S.ResultBox>
-          <span>ACC</span>
-          {results.acc}%
-        </S.ResultBox>
-
-        <S.ResultBox>
-          <span>Correct</span>
-          {results.correct}
-        </S.ResultBox>
-        <S.ResultBox>
-          <span>Incorrect</span>
-          {results.incorrect}
-        </S.ResultBox>
-        <S.ResultBox>
-          <span>Fixed</span>
-          {results.fixed}
-        </S.ResultBox>
-        <S.ResultBox>
-          <span>Extra</span>
-          {results.extra}
-        </S.ResultBox>
-        <S.ResultBox>
-          <span>Missed</span>
-          {results.missed}
-        </S.ResultBox>
-      </S.Results>
     </S.Container>
   )
 }

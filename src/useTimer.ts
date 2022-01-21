@@ -7,9 +7,8 @@ interface State {
   timerId: number
   totalTime: number
   leftTime: number
-  setTime(time: number): void
   start(): void
-  reset(): void
+  reset(time?: number): void
 }
 
 function getLocalTime(): number {
@@ -26,11 +25,6 @@ export default create<State>(set => ({
   timerId: 0,
   leftTime: getLocalTime(),
   totalTime: getLocalTime(),
-  setTime: time =>
-    set(() => {
-      setLocalTime(time)
-      return { totalTime: time, leftTime: time }
-    }),
   start: () => {
     const id = window.setInterval(() => {
       set(s => {
@@ -42,10 +36,12 @@ export default create<State>(set => ({
 
     set({ timerId: id })
   },
-  reset: () =>
+  reset: time =>
     set(s => {
+      if (time) setLocalTime(time)
       clearInterval(s.timerId)
 
-      return { timerId: 0, leftTime: s.totalTime }
+      const totalTime = time || s.totalTime
+      return { timerId: 0, leftTime: totalTime, totalTime }
     }),
 }))

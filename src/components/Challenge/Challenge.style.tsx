@@ -3,7 +3,6 @@ import Button from '../Button'
 import Box from '../Box'
 
 export const Container = styled.section`
-  margin-top: 8rem;
   display: grid;
   gap: var(--space-lg);
 `
@@ -136,33 +135,4 @@ export const CapsBox = styled(DetailBox)`
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 150ms opacity ease-in;
-`
-
-/* --------------------------------- results -------------------------------- */
-export const Results = styled.section`
-  display: grid;
-  gap: var(--space-lg);
-  grid-template-columns: repeat(10, 1fr);
-  margin: calc(8rem + var(--space-lg)) auto;
-`
-
-export const ResultBox = styled(Box)`
-  display: grid;
-  place-items: center;
-  grid-column: span 2;
-  font-size: 2rem;
-  aspect-ratio: 1;
-
-  span {
-    color: var(--color-fg-alt);
-    font-size: 0.5em;
-    font-weight: 500;
-  }
-
-  &:nth-child(7n + 1),
-  &:nth-child(7n + 2) {
-    grid-column: span 5;
-    font-size: 3rem;
-    aspect-ratio: 3/1;
-  }
 `
