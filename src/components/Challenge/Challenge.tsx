@@ -171,6 +171,7 @@ export default function Challenge() {
           autoFocus
           ref={inputBox}
           value={currentInput}
+          onPaste={ev => ev.preventDefault()}
           onChange={ev => timer.leftTime && handleType(ev.target.value)}
           onKeyDown={ev => timer.leftTime && handleBackspace(ev)}
           onFocus={ev => {
