@@ -28,6 +28,7 @@ export const Instructions = styled.p<TextBoxProps>`
   font-weight: 500;
   font-size: 1.25rem;
   transition: inherit;
+  transition-delay: ${p => !p.textFocused && '1s'};
   filter: ${p => p.textFocused && 'opacity(0)'};
 `
 
@@ -53,6 +54,7 @@ export const Text = styled.p<TextBoxProps>`
   line-height: var(--line-height);
   user-select: none;
   transition: inherit;
+  transition-delay: ${p => !p.textFocused && '1s'};
   filter: ${p => !p.textFocused && 'blur(4px) opacity(0.5)'};
 `
 
