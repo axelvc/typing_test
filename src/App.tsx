@@ -1,4 +1,4 @@
-import useTimer from './useTimer'
+import useTimer from './hooks/useTimer'
 
 import Challenge from './components/Challenge/Challenge'
 import Header from './components/Header/Header'

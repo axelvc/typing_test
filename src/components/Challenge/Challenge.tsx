@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState, useRef } from 'react'
-import useText from '../../useText'
-import useTimer from '../../useTimer'
+import useText from '../../hooks/useText'
+import useTimer from '../../hooks/useTimer'
 
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'

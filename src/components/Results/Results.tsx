@@ -1,5 +1,5 @@
-import useText from '../../useText'
-import useTimer from '../../useTimer'
+import useText from '../../hooks/useText'
+import useTimer from '../../hooks/useTimer'
 
 import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import * as S from './Results.style'
