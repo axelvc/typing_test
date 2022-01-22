@@ -55,6 +55,13 @@ export default function Challenge() {
     return () => document.documentElement.removeEventListener('keydown', focusText)
   }, [textFocused])
 
+  useEffect(() => {
+    const focusText = () => inputBox.current?.focus()
+
+    window.addEventListener('focus', focusText)
+    return () => window.removeEventListener('focus', focusText)
+  }, [])
+
   /* --------------------------------- typing --------------------------------- */
   const text = useText()
   const inputIdx = text.inputs.length - 1
