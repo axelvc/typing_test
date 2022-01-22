@@ -177,10 +177,8 @@ export default function Challenge() {
           value={currentInput}
           onCopy={ev => ev.preventDefault()}
           onPaste={ev => ev.preventDefault()}
-          onFocus={ev => {
-            ev.target.setSelectionRange(-1, -1)
-            setTextFoucused(true)
-          }}
+          onSelect={ev => (ev.target as HTMLInputElement).setSelectionRange(-1, -1)}
+          onFocus={() => setTextFoucused(true)}
           onBlur={() => setTextFoucused(false)}
           onChange={ev => text.type(ev.target.value)}
           onKeyDown={ev => handleBackspace(ev)}
