@@ -93,12 +93,11 @@ export default function Challenge() {
   }, [inputIdx])
 
   function handleBackspace(ev: React.KeyboardEvent) {
-    if (ev.key !== 'Backspace' || currentInput !== '') return
+    if (ev.key !== 'Backspace' || currentInput !== '' || !inputIdx) return
 
-    const prevWordTop = wordBoxes.current[inputIdx - 1]?.offsetTop || 0
-    const scrollTop = textBox.current?.scrollTop || 0
-
-    if (scrollTop > prevWordTop) return
+    const topLimit = wordBoxes.current[inputIdx - 1].offsetTop
+    const prevWordTop = textBox.current!.scrollTop
+    if (prevWordTop > topLimit) return
 
     if (!ev.ctrlKey) ev.preventDefault()
     text.prevWord()
@@ -140,21 +139,6 @@ export default function Challenge() {
   const lineBox = useRef<HTMLDivElement>(null)
   const [lineAnimation, setLineAnimation] = useState<Animation | null>(null)
 
-  function handleType(value: string) {
-    text.type(value)
-
-    if (timer.timerId) return
-
-    const animation = lineBox.current!.animate([{ width: '100%' }, { width: '0%' }], {
-      duration: timer.leftTime * 1000,
-      easing: 'linear',
-      fill: 'forwards',
-    })
-
-    setLineAnimation(animation)
-    timer.start()
-  }
-
   function resetFocus() {
     textBox.current!.scrollTop = 0
     inputBox.current!.focus()
@@ -169,6 +153,19 @@ export default function Challenge() {
 
   useEffect(resetFocus, [timer.totalTime])
 
+  useEffect(() => {
+    if (!currentInput || timer.timerId) return
+
+    const animation = lineBox.current!.animate([{ width: '100%' }, { width: '0%' }], {
+      duration: timer.leftTime * 1000,
+      easing: 'linear',
+      fill: 'forwards',
+    })
+
+    setLineAnimation(animation)
+    timer.start()
+  }, [!inputIdx && !currentInput])
+
   return (
     <S.Container>
       <S.TextBox onClick={() => inputBox.current?.focus()}>
@@ -178,14 +175,15 @@ export default function Challenge() {
           autoFocus
           ref={inputBox}
           value={currentInput}
+          onCopy={ev => ev.preventDefault()}
           onPaste={ev => ev.preventDefault()}
-          onChange={ev => timer.leftTime && handleType(ev.target.value)}
-          onKeyDown={ev => timer.leftTime && handleBackspace(ev)}
           onFocus={ev => {
             ev.target.setSelectionRange(-1, -1)
             setTextFoucused(true)
           }}
           onBlur={() => setTextFoucused(false)}
+          onChange={ev => text.type(ev.target.value)}
+          onKeyDown={ev => handleBackspace(ev)}
         />
 
         <S.Instructions textFocused={textFocused} data-testid="challengeInstructions">

@@ -61,7 +61,7 @@ export default function Results() {
       </S.Results>
 
       <S.Button onClick={() => handleReset()}>
-        <ResetIcon />
+        <ResetIcon className="icon" />
       </S.Button>
     </S.Container>
   )
