@@ -5,26 +5,49 @@ import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import * as S from './Results.style'
 
 export default function Results() {
-  const inputs = useText(s => s.inputs)
-  const words = useText(s => s.words)
-  const wrongs = useText(s => s.wrongs)
-  const resetText = useText(s => s.reset)
-  const totalTime = useTimer(s => s.totalTime)
-  const resetTimer = useTimer(s => s.reset)
+  const text = useText()
+  const timer = useTimer()
 
-  const total = inputs.reduce((a, w) => a + w.length + 1, -1)
-  const wrongRaw = Object.values(wrongs).reduce((a, i) => a + Object.values(i).length, 0)
-  const extra = inputs.reduce((a, w, i) => a + w.slice(words[i].length).length, 0)
-  const missed = inputs.slice(0, -1).reduce((a, w, i) => a + Math.max(words[i].length - w.length, 0), 0)
-  const fixed = inputs.flatMap((w, wi) => [...w].filter((c, ci) => c === words[wi][ci] && wrongs[wi]?.[ci])).length
-  const correct = total - wrongRaw
-  const incorrect = wrongRaw - fixed - extra
-  const wpm = correct / 5 / (totalTime / 60)
-  const acc = ((correct * 100) / total).toFixed(2)
+  let correct = 0
+  let incorrect = 0
+  let fixed = 0
+  let extra = 0
+  let missed = 0
+
+  text.words.slice(0, text.inputs.length).forEach((word, wi) => {
+    const input = text.inputs[wi]
+    const wl = word.length
+    const il = input.length
+    const diff = Math.abs(wl - il)
+
+    word.slice(0, il).forEach((char, ci) => {
+      if (char !== input[ci]) {
+        incorrect += 1
+      } else if (text.wrongs[wi][ci]) {
+        fixed += 1
+      } else {
+        correct += 1
+      }
+    })
+
+    if (il > wl) {
+      extra += diff
+    }
+
+    if (wi < text.inputs.length - 1) {
+      missed += diff
+      correct += 1
+    }
+  })
+
+  const right = correct + fixed
+  const total = correct + incorrect + fixed + extra
+  const acc = Math.round((right * 100) / total || 0)
+  const wpm = Math.round(correct / 5 / (timer.totalTime / 60))
 
   function handleReset() {
-    resetText()
-    resetTimer()
+    text.reset()
+    timer.reset()
   }
 
   return (

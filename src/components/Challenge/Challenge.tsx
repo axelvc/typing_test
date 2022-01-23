@@ -119,7 +119,7 @@ export default function Challenge() {
 
     if (!inputChar) return 'missed'
     if (inputChar !== char) return 'incorrect'
-    if (text.wrongs[wi]?.[ci]) return 'fixed'
+    if (text.wrongs[wi][ci]) return 'fixed'
 
     return 'correct'
   }

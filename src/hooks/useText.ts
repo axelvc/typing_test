@@ -4,7 +4,7 @@ import produce from 'immer'
 import getRandomWords from '../services/wordService'
 
 interface State {
-  wrongs: Record<number, Record<number, boolean>>
+  wrongs: Record<number, boolean>[]
   words: string[][]
   inputs: string[]
   type(value: string): void
@@ -14,26 +14,33 @@ interface State {
 }
 
 export default create<State>(set => ({
-  wrongs: {},
+  wrongs: [{}],
   words: getRandomWords(),
   inputs: [''],
   type: value =>
     set(
       produce(s => {
         if (value.endsWith(' ')) {
-          if (value.length > 1) s.inputs.push('')
+          if (value.length > 1) {
+            s.inputs.push('')
+            s.wrongs.push({})
+          }
+
           return
         }
+
         const inputIdx = s.inputs.length - 1
         const inputLength = s.inputs[inputIdx].length
+
         if (value.length > inputLength) {
           const inputChar = value.at(-1)
           const char = s.words[inputIdx].at(inputLength)
+
           if (char !== inputChar) {
-            s.wrongs[inputIdx] ||= {}
             s.wrongs[inputIdx][inputLength] = true
           }
         }
+
         s.inputs[inputIdx] = value
       }),
     ),
@@ -54,5 +61,5 @@ export default create<State>(set => ({
         s.words = [...s.words, ...getRandomWords()]
       }),
     ),
-  reset: () => set({ wrongs: {}, words: getRandomWords(), inputs: [''] }),
+  reset: () => set({ wrongs: [{}], words: getRandomWords(), inputs: [''] }),
 }))
