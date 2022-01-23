@@ -17,6 +17,13 @@ export const TextBox = styled.div`
   transition: 200ms ease-out;
 `
 
+export const Input = styled.input`
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+`
+
 export const Instructions = styled.p<TextBoxProps>`
   position: absolute;
   top: 0;
@@ -30,13 +37,6 @@ export const Instructions = styled.p<TextBoxProps>`
   transition: inherit;
   transition-delay: ${p => !p.textFocused && '1s'};
   filter: ${p => p.textFocused && 'opacity(0)'};
-`
-
-export const Input = styled.input`
-  position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
 `
 
 export const Text = styled.p<TextBoxProps>`
@@ -58,17 +58,19 @@ export const Text = styled.p<TextBoxProps>`
   filter: ${p => !p.textFocused && 'blur(4px) opacity(0.5)'};
 `
 
-export type CharType = 'current' | 'correct' | 'incorrect' | 'fixed' | 'missed' | null | undefined
+export type CharType = 'current' | 'correct' | 'incorrect' | 'fixed' | 'missed' | 'extra' | null | undefined
 
 const charColors: Record<Exclude<CharType, 'missed' | null | undefined>, string> = {
   current: 'var(--color-bg)',
   correct: 'var(--color-main)',
   incorrect: 'var(--color-error)',
   fixed: 'var(--color-fixed)',
+  extra: 'var(--color-error)',
 } as const
 
 export const Char = styled.span<{ type?: CharType }>`
   color: ${p => p.type && p.type !== 'missed' && charColors[p.type]};
+  white-space: pre-wrap;
 
   ${p =>
     p.type === 'missed' &&
@@ -84,6 +86,13 @@ export const Char = styled.span<{ type?: CharType }>`
     css`
       background: var(--color-main);
       border-radius: var(--rounded);
+    `}
+
+  ${p =>
+    p.type === 'extra' &&
+    css`
+      opacity: 0.5;
+      text-decoration: line-through;
     `}
 `
 

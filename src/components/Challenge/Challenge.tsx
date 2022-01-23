@@ -103,19 +103,17 @@ export default function Challenge() {
     text.prevWord()
   }
 
-  function getType(char: string, wi: number, ci: number): S.CharType {
-    const inputWord = text.inputs[wi]
-
+  function getType(char: string, input: string, wi: number, ci: number): S.CharType {
     if (wi > inputIdx) return
 
     if (wi === inputIdx) {
-      const inputCi = inputWord.length
+      const inputCi = input.length
 
       if (ci > inputCi) return
       if (ci === inputCi) return 'current'
     }
 
-    const inputChar = inputWord[ci]
+    const inputChar = input[ci]
 
     if (!inputChar) return 'missed'
     if (inputChar !== char) return 'incorrect'
@@ -124,14 +122,23 @@ export default function Challenge() {
     return 'correct'
   }
 
-  function getExtraChars(word: string[], wi: number): string {
-    const chars = text.inputs[wi] || ''
+  function getChars(wi: number): { char: string; type: S.CharType }[] {
+    const word = text.words[wi]
+    const input = text.inputs[wi]
+    const chars = word.map((char, ci) => ({ char, type: getType(char, input, wi, ci) }))
 
-    return chars.slice(word.length)
-  }
+    if (input) {
+      chars.push(
+        ...input
+          .slice(word.length)
+          .split('')
+          .map(char => ({ char, type: 'extra' as S.CharType })),
+      )
+    }
 
-  function isLastWordChar(word: string[], wi: number): boolean {
-    return wi === inputIdx && currentInput.length >= word.length
+    chars.push({ char: ' ', type: wi === inputIdx && currentInput.length >= word.length ? 'current' : null })
+
+    return chars
   }
 
   /* ---------------------------------- timer --------------------------------- */
@@ -190,22 +197,18 @@ export default function Challenge() {
         </S.Instructions>
 
         <S.Text textFocused={textFocused} data-testid="challengeText" ref={textBox}>
-          {text.words.map((word, wi) => (
+          {text.words.map((_, wi) => (
             <span
               key={wi}
               ref={el => {
-                wordBoxes.current[wi] = el as HTMLSpanElement
+                wordBoxes.current[wi] = el!
               }}
             >
-              {word.map((char, ci) => (
-                <S.Char key={ci} type={getType(char, wi, ci)} data-testid="challengeChar">
+              {getChars(wi).map(({ char, type }, ci) => (
+                <S.Char key={ci} type={type}>
                   {char}
                 </S.Char>
               ))}
-              {getExtraChars(word, wi) && <S.Extra>{getExtraChars(word, wi)}</S.Extra>}
-              <S.Char type={isLastWordChar(word, wi) ? 'current' : null} data-testid="challengeCharSpace">
-                &nbsp;
-              </S.Char>
             </span>
           ))}
         </S.Text>
