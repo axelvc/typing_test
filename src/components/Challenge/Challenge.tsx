@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import useText from '../../hooks/useText'
 import useTimer from '../../hooks/useTimer'
 
@@ -7,7 +7,7 @@ import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
 import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
 import * as S from './Challenge.style'
 
-function humanTime(time: number) {
+function getHumanTime(time: number): string {
   const MINUTE_IN_SECS = 60
   const mins = Math.floor(time / MINUTE_IN_SECS)
   const secs = time % MINUTE_IN_SECS
@@ -136,8 +136,9 @@ export default function Challenge() {
 
   /* ---------------------------------- timer --------------------------------- */
   const timer = useTimer()
-  const lineBox = useRef<HTMLDivElement>(null)
+  const humanTime = useMemo(() => getHumanTime(timer.leftTime), [timer.leftTime])
   const [lineAnimation, setLineAnimation] = useState<Animation | null>(null)
+  const lineBox = useRef<HTMLDivElement>(null)
 
   function resetFocus() {
     textBox.current!.scrollTop = 0
@@ -215,7 +216,7 @@ export default function Challenge() {
       </S.Line>
 
       <S.Details>
-        <S.DetailBox>{humanTime(timer.leftTime)}</S.DetailBox>
+        <S.DetailBox>{humanTime}</S.DetailBox>
         <S.ResetButton title="reset" onClick={() => handleReset()}>
           <ResetIcon className="icon" />
         </S.ResetButton>
