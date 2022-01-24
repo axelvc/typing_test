@@ -80,12 +80,13 @@ export default function Challenge() {
 
   useEffect(() => {
     const el = wordBoxes.current[inputIdx]
-    const tb = textBox.current
 
-    if (!el || !tb) return
+    if (!inputIdx || el.offsetLeft !== 0) return
 
+    const tb = textBox.current!
+    const top = el.offsetTop
     const height = el.offsetHeight
-    const wordTop = el.offsetTop - tb.scrollTop
+    const wordTop = top - tb.scrollTop
 
     if (wordTop > height) {
       tb.scrollTop += height
