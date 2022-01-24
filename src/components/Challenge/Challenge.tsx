@@ -93,6 +93,17 @@ export default function Challenge() {
     }
   }, [inputIdx])
 
+  function handleType(val: string) {
+    const totalWidth = textBox.current!.offsetWidth
+    const wordBox = wordBoxes.current[inputIdx]
+    const charWidth = wordBox.offsetWidth / wordBox.childElementCount
+    const nextWidth = wordBox.offsetLeft + charWidth * (val.length + 1)
+
+    if (nextWidth > totalWidth && !val.endsWith(' ')) return
+
+    text.type(val)
+  }
+
   function handleBackspace(ev: React.KeyboardEvent) {
     if (ev.key !== 'Backspace' || currentInput !== '' || !inputIdx) return
 
@@ -189,7 +200,7 @@ export default function Challenge() {
           onSelect={ev => (ev.target as HTMLInputElement).setSelectionRange(-1, -1)}
           onFocus={() => setTextFoucused(true)}
           onBlur={() => setTextFoucused(false)}
-          onChange={ev => text.type(ev.target.value)}
+          onChange={ev => handleType(ev.target.value)}
           onKeyDown={ev => handleBackspace(ev)}
         />
 
