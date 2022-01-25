@@ -16,7 +16,7 @@ function getHumanTime(time: number): string {
   return `${pad(mins)}:${pad(secs)}`
 }
 
-let caretTop: number = 0
+let caretTop = 0
 
 export default function Challenge() {
   /* -------------------------------- caps lock ------------------------------- */
@@ -81,17 +81,15 @@ export default function Challenge() {
   }, [inputIdx])
 
   useEffect(() => {
-    const el = wordBoxes.current[inputIdx]
+    const word = wordBoxes.current[inputIdx]
 
-    if (!inputIdx || el.offsetLeft !== 0) return
+    if (!inputIdx || word.offsetLeft !== 0) return
 
     const tb = textBox.current!
-    const top = el.offsetTop
-    const height = el.offsetHeight
-    const wordTop = top - tb.scrollTop
+    const prevTop = (word.previousElementSibling as HTMLSpanElement).offsetTop
 
-    if (wordTop > height) {
-      tb.scrollTop += height
+    if (prevTop - tb.scrollTop > 0) {
+      tb.scrollTop = prevTop
     }
   }, [inputIdx])
 
@@ -99,7 +97,7 @@ export default function Challenge() {
     const totalWidth = textBox.current!.offsetWidth
     const wordBox = wordBoxes.current[inputIdx]
     const charWidth = wordBox.offsetWidth / wordBox.childElementCount
-    const nextWidth = wordBox.offsetLeft + charWidth * (val.length + 1)
+    const nextWidth = wordBox.offsetLeft + charWidth * val.length
 
     if (nextWidth > totalWidth && !val.endsWith(' ')) return
 
@@ -150,8 +148,6 @@ export default function Challenge() {
       )
     }
 
-    chars.push({ char: ' ', type: null })
-
     return chars
   }
 
@@ -160,9 +156,9 @@ export default function Challenge() {
 
   useEffect(() => {
     const caret = caretBox.current!
-    const char = wordBoxes.current[inputIdx].children[currentInput.length] as HTMLSpanElement
-    const left = char.offsetLeft
-    const top = char.offsetTop
+    const word = wordBoxes.current[inputIdx]
+    const left = word.offsetLeft + currentInput.length * caret.offsetWidth
+    const top = word.offsetTop
     const scrollTop = top - textBox.current!.scrollTop
     const center = textBox.current!.offsetHeight / 2
 

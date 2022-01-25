@@ -57,10 +57,12 @@ export const Caret = styled.div`
 export const Text = styled.p<TextBoxProps>`
   --lines-to-shown: 3;
   --font-size: 3rem;
-  --line-height: calc(var(--font-size) * 2);
-  --max-height: calc(var(--line-height) * var(--lines-to-shown));
+  --gap: 1ex;
+  --line-height: calc(var(--font-size) * 1.3);
+  --max-height: calc(var(--line-height) * var(--lines-to-shown) + var(--gap) * (var(--lines-to-shown) - 1));
 
   display: flex;
+  gap: 1ex 1ch;
   flex-wrap: wrap;
   max-height: var(--max-height);
   overflow: hidden;
