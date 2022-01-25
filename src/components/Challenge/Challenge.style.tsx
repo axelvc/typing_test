@@ -39,6 +39,21 @@ export const Instructions = styled.p<TextBoxProps>`
   filter: ${p => p.textFocused && 'opacity(0)'};
 `
 
+export const Caret = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--color-fg);
+  border-radius: var(--rounded);
+  font-size: 3rem;
+  transition: 100ms ease-out;
+  opacity: 0.2;
+
+  &::before {
+    content: '\\00a0';
+  }
+`
+
 export const Text = styled.p<TextBoxProps>`
   --lines-to-shown: 3;
   --font-size: 3rem;
@@ -61,7 +76,7 @@ export const Text = styled.p<TextBoxProps>`
 export type CharType = 'current' | 'correct' | 'incorrect' | 'fixed' | 'missed' | 'extra' | null | undefined
 
 const charColors: Record<Exclude<CharType, 'missed' | null | undefined>, string> = {
-  current: 'var(--color-bg)',
+  current: 'var(--color-fg)',
   correct: 'var(--color-main)',
   incorrect: 'var(--color-error)',
   fixed: 'var(--color-fixed)',
@@ -70,6 +85,7 @@ const charColors: Record<Exclude<CharType, 'missed' | null | undefined>, string>
 
 export const Char = styled.span<{ type?: CharType }>`
   color: ${p => p.type && p.type !== 'missed' && charColors[p.type]};
+  transition: ${p => p.type === 'current' && '50ms color 50ms ease-out'};
   white-space: pre-wrap;
 
   ${p =>
@@ -80,13 +96,6 @@ export const Char = styled.span<{ type?: CharType }>`
 
       --selection-decoration: var(--color-error);
     `};
-
-  ${p =>
-    p.type === 'current' &&
-    css`
-      background: var(--color-main);
-      border-radius: var(--rounded);
-    `}
 
   ${p =>
     p.type === 'extra' &&

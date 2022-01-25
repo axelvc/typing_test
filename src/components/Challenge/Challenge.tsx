@@ -16,6 +16,8 @@ function getHumanTime(time: number): string {
   return `${pad(mins)}:${pad(secs)}`
 }
 
+let caretTop: number = 0
+
 export default function Challenge() {
   /* -------------------------------- caps lock ------------------------------- */
   const [capsLock, setCapsLock] = useState(false)
@@ -148,10 +150,30 @@ export default function Challenge() {
       )
     }
 
-    chars.push({ char: ' ', type: wi === inputIdx && currentInput.length >= word.length ? 'current' : null })
+    chars.push({ char: ' ', type: null })
 
     return chars
   }
+
+  /* ---------------------------------- caret --------------------------------- */
+  const caretBox = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const caret = caretBox.current!
+    const char = wordBoxes.current[inputIdx].children[currentInput.length] as HTMLSpanElement
+    const left = char.offsetLeft
+    const top = char.offsetTop
+    const scrollTop = top - textBox.current!.scrollTop
+    const center = textBox.current!.offsetHeight / 2
+
+    if (inputIdx === 0) {
+      caretTop = top
+    } else if (scrollTop <= center) {
+      caretTop = scrollTop
+    }
+
+    caret.style.transform = `translate(${left}px, ${caretTop}px)`
+  }, [currentInput, inputIdx])
 
   /* ---------------------------------- timer --------------------------------- */
   const timer = useTimer()
@@ -207,6 +229,8 @@ export default function Challenge() {
         <S.Instructions textFocused={textFocused} data-testid="challengeInstructions">
           Click here or type any key to focus the text
         </S.Instructions>
+
+        <S.Caret ref={caretBox} />
 
         <S.Text textFocused={textFocused} data-testid="challengeText" ref={textBox}>
           {text.words.map((_, wi) => (
