@@ -2,6 +2,7 @@
 import create from 'zustand'
 import produce from 'immer'
 import getRandomWords from 'services/wordService'
+import * as audio from 'services/clickAudioService'
 
 interface State {
   wrongs: Record<number, boolean>[]
@@ -24,6 +25,7 @@ export default create<State>(set => ({
           if (value.length > 1) {
             s.inputs.push('')
             s.wrongs.push({})
+            audio.space()
           }
 
           return
@@ -31,17 +33,22 @@ export default create<State>(set => ({
 
         const inputIdx = s.inputs.length - 1
         const inputLength = s.inputs[inputIdx].length
+        let error = false
 
         if (value.length > inputLength) {
           const inputChar = value.at(-1)
           const char = s.words[inputIdx].at(inputLength)
 
           if (char !== inputChar) {
+            error = true
             s.wrongs[inputIdx][inputLength] = true
           }
         }
 
         s.inputs[inputIdx] = value
+
+        if (error) audio.error()
+        else audio.click()
       }),
     ),
   prevWord: () =>
