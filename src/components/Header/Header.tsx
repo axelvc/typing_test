@@ -1,5 +1,5 @@
-import useTimer from '../../hooks/useTimer'
-import useText from '../../hooks/useText'
+import useTimer from 'hooks/useTimer'
+import useText from 'hooks/useText'
 
 import * as S from './Header.style'
 

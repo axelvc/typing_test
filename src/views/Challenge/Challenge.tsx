@@ -1,10 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState, useRef, useMemo } from 'react'
-import useText from '../../hooks/useText'
-import useTimer from '../../hooks/useTimer'
+import useText from 'hooks/useText'
+import useTimer from 'hooks/useTimer'
 
-import { ReactComponent as ResetIcon } from '../icons/ResetIcon.svg'
-import { ReactComponent as LockIcon } from '../icons/LockIcon.svg'
+import { ReactComponent as LockIcon } from 'static/icons/LockIcon.svg'
+import { ReactComponent as ResetIcon } from 'static/icons/ResetIcon.svg'
 import * as S from './Challenge.style'
 
 function getHumanTime(time: number): string {

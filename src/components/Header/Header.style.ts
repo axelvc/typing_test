@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import ButtonBase from '../Button'
+import ButtonBase from 'components/Button'
 
 export const Header = styled.header`
   display: flex;

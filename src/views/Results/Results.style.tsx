@@ -1,6 +1,6 @@
 import styled from 'styled-components'
-import BoxBase from '../Box'
-import ButtonBase from '../Button'
+import BoxBase from 'components/Box'
+import ButtonBase from 'components/Button'
 
 export const Container = styled.section`
   display: grid;

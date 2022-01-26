@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components'
-import Button from '../Button'
-import Box from '../Box'
+import Button from 'components/Button'
+import Box from 'components/Box'
 
 export const Container = styled.section`
   display: grid;

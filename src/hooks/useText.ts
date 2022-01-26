@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import create from 'zustand'
 import produce from 'immer'
-import getRandomWords from '../services/wordService'
+import getRandomWords from 'services/wordService'
 
 interface State {
   wrongs: Record<number, boolean>[]

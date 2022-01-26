@@ -1,4 +1,4 @@
-import words from './words.json'
+import words from 'static/words.json'
 
 export default function getRandomWords(quantity = 50): string[][] {
   const visited = new Set<number>()
