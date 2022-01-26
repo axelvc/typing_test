@@ -216,7 +216,7 @@ export default function Challenge() {
           Click here or type any key to focus the text
         </S.Instructions>
 
-        <S.Caret ref={caretBox} show={textFocused} />
+        <S.Caret ref={caretBox} show={textFocused} data-testid="challengeCaret" />
 
         <S.Text blur={!textFocused} data-testid="challengeText" ref={textBox}>
           {text.words.map((_, wi) => (
@@ -227,7 +227,7 @@ export default function Challenge() {
               }}
             >
               {getChars(wi).map(({ char, type }, ci) => (
-                <S.Char key={ci} type={type}>
+                <S.Char key={ci} type={type} data-testid="challengeChar">
                   {char}
                 </S.Char>
               ))}
