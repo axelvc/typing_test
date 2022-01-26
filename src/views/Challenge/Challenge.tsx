@@ -174,13 +174,10 @@ export default function Challenge() {
   /* ---------------------------------- timer --------------------------------- */
   const timer = useTimer()
   const humanTime = useMemo(() => getHumanTime(timer.leftTime), [timer.leftTime])
-  const [lineAnimation, setLineAnimation] = useState<Animation | null>(null)
-  const lineBox = useRef<HTMLDivElement>(null)
 
   function resetFocus() {
     textBox.current!.scrollTop = 0
     inputBox.current!.focus()
-    lineAnimation?.cancel()
   }
 
   function handleReset() {
@@ -194,13 +191,6 @@ export default function Challenge() {
   useEffect(() => {
     if (!currentInput || timer.timerId) return
 
-    const animation = lineBox.current!.animate([{ width: '100%' }, { width: '0%' }], {
-      duration: timer.leftTime * 1000,
-      easing: 'linear',
-      fill: 'forwards',
-    })
-
-    setLineAnimation(animation)
     timer.start()
   }, [!inputIdx && !currentInput])
 
@@ -222,13 +212,13 @@ export default function Challenge() {
           onKeyDown={ev => handleBackspace(ev)}
         />
 
-        <S.Instructions textFocused={textFocused} data-testid="challengeInstructions">
+        <S.Instructions show={!textFocused} data-testid="challengeInstructions">
           Click here or type any key to focus the text
         </S.Instructions>
 
-        <S.Caret ref={caretBox} />
+        <S.Caret ref={caretBox} show={textFocused} />
 
-        <S.Text textFocused={textFocused} data-testid="challengeText" ref={textBox}>
+        <S.Text blur={!textFocused} data-testid="challengeText" ref={textBox}>
           {text.words.map((_, wi) => (
             <span
               key={wi}
@@ -246,16 +236,14 @@ export default function Challenge() {
         </S.Text>
       </S.TextBox>
 
-      <S.Line>
-        <div ref={lineBox} />
-      </S.Line>
+      <S.TimerLine duration={timer.timerId && timer.totalTime} />
 
       <S.Details>
         <S.DetailBox>{humanTime}</S.DetailBox>
         <S.ResetButton title="reset" onClick={() => handleReset()}>
           <ResetIcon className="icon" />
         </S.ResetButton>
-        <S.CapsBox style={{ opacity: capsLock ? 1 : 0 }}>
+        <S.CapsBox show={capsLock}>
           CAPS LOCK
           <LockIcon className="icon" />
         </S.CapsBox>

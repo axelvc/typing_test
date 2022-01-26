@@ -8,10 +8,6 @@ export const Container = styled.section`
 `
 
 /* ---------------------------------- textbox ---------------------------------- */
-interface TextBoxProps {
-  textFocused: boolean
-}
-
 export const TextBox = styled.div`
   position: relative;
   transition: 200ms ease-out;
@@ -24,7 +20,7 @@ export const Input = styled.input`
   opacity: 0;
 `
 
-export const Instructions = styled.p<TextBoxProps>`
+export const Instructions = styled.p<{ show?: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
@@ -35,11 +31,11 @@ export const Instructions = styled.p<TextBoxProps>`
   font-weight: 500;
   font-size: 1.25rem;
   transition: inherit;
-  transition-delay: ${p => !p.textFocused && '1s'};
-  filter: ${p => p.textFocused && 'opacity(0)'};
+  transition-delay: ${p => p.show && '1s'};
+  filter: ${p => (p.show ? 'opacity(1)' : 'opacity(0)')};
 `
 
-export const Caret = styled.div`
+export const Caret = styled.div<{ show?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -47,14 +43,14 @@ export const Caret = styled.div`
   border-radius: var(--rounded);
   font-size: 3rem;
   transition: 100ms ease-out;
-  opacity: 0.2;
+  opacity: ${p => (p.show ? 0.2 : 0)};
 
   &::before {
     content: '\\00a0';
   }
 `
 
-export const Text = styled.p<TextBoxProps>`
+export const Text = styled.p<{ blur?: boolean }>`
   --lines-to-shown: 3;
   --font-size: 3rem;
   --gap: 1ex;
@@ -71,8 +67,8 @@ export const Text = styled.p<TextBoxProps>`
   line-height: var(--line-height);
   user-select: none;
   transition: inherit;
-  transition-delay: ${p => !p.textFocused && '1s'};
-  filter: ${p => !p.textFocused && 'blur(4px) opacity(0.5)'};
+  transition-delay: ${p => p.blur && '1s'};
+  filter: ${p => p.blur && 'blur(4px) opacity(0.5)'};
 `
 
 export type CharType = 'current' | 'correct' | 'incorrect' | 'fixed' | 'missed' | 'extra' | null | undefined
@@ -113,17 +109,28 @@ export const Extra = styled.span`
   text-decoration: line-through;
 `
 
-/* ---------------------------------- line ---------------------------------- */
-export const Line = styled.div`
+/* ------------------------------- timer line ------------------------------- */
+export const TimerLine = styled.div<{ duration?: number }>`
   width: 100%;
   height: 0.25rem;
   background: var(--color-bg-alt);
   border-radius: var(--rounded);
+  overflow: hidden;
 
-  div {
+  &::before {
+    content: '';
+    display: block;
     height: 100%;
     background: var(--color-main);
     border-radius: inherit;
+    transform-origin: left;
+
+    ${p =>
+      p.duration &&
+      css`
+        transition: ${p.duration}s linear;
+        transform: translateX(-100%);
+      `}
   }
 `
 
@@ -146,7 +153,7 @@ export const ResetButton = styled(Button)`
   aspect-ratio: 1;
 `
 
-export const CapsBox = styled(DetailBox)`
+export const CapsBox = styled(DetailBox)<{ show?: boolean }>`
   --selection-fg: var(--color-bg);
   --selection-bg: var(--color-error);
 
@@ -157,4 +164,5 @@ export const CapsBox = styled(DetailBox)`
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 150ms opacity ease-in;
+  opacity: ${p => Number(p.show)};
 `
