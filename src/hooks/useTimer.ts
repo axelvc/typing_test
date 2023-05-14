@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 
 const STORAGE_KEY = 'typing-time'
 const INITIAL_TIME = 60

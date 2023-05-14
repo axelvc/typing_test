@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event'
 import useText from 'hooks/useText'
 import Challenge from './Challenge'
 
-beforeEach(() => render(<Challenge />))
+let user: ReturnType<typeof userEvent.setup>
+
+beforeEach(() => {
+  user = userEvent.setup()
+  render(<Challenge />)
+})
 
 describe('Challenge component', () => {
   it('should focus the box at the beginning', () => {
@@ -12,12 +17,12 @@ describe('Challenge component', () => {
     expect(input).toHaveFocus()
   })
 
-  it('should change text when click reset button', () => {
+  it('should change text when click reset button', async () => {
     const reset = screen.getByRole('button', { name: /reset/i })
     const textBox = screen.getByTestId('challengeText')
     const text = textBox.textContent as string
 
-    userEvent.click(reset)
+    await user.click(reset)
     expect(textBox.textContent).not.toBe(text)
   })
 
@@ -25,11 +30,11 @@ describe('Challenge component', () => {
     it.todo('should scroll on typing')
     it.todo('should not scroll if the prev word is above the text box')
 
-    it('should get new words if is close to the end of the text', () => {
+    it('should get new words if is close to the end of the text', async () => {
       const words = useText.getState().words.map(word => word.join(''))
       const textBox = screen.getByTestId('challengeText')
 
-      userEvent.keyboard(words.join(' '))
+      await user.keyboard(words.join(' '))
 
       expect(textBox.childElementCount).toBe(words.length * 2)
     })
@@ -39,26 +44,27 @@ describe('Challenge component', () => {
     it.todo('caret')
 
     describe('type feedback', () => {
-      it('should have correct styles', () => {
-        const char = screen.getAllByTestId('challengeChar')[0]
-
-        userEvent.keyboard(char.textContent!)
-        expect(char).toHaveStyleRule('color', 'var(--color-main)')
-      })
-
-      it('should have incorrect styles', () => {
+      it('should have correct styles', async () => {
         const chars = screen.getAllByTestId('challengeChar')
 
-        userEvent.keyboard(chars[1].textContent!)
+        await user.keyboard(chars[0].textContent!)
+        expect(chars[0]).toHaveStyleRule('color', 'var(--color-main)')
+      })
+
+      it('should have incorrect styles', async () => {
+        const chars = screen.getAllByTestId('challengeChar')
+
+        await user.keyboard(chars[1].textContent!)
         expect(chars[0]).toHaveStyleRule('color', 'var(--color-error)')
       })
 
-      it('should have fixed styles', () => {
+      it('should have fixed styles', async () => {
         const chars = screen.getAllByTestId('challengeChar')
 
-        userEvent.keyboard(chars[1].textContent!)
-        userEvent.keyboard('{Backspace}')
-        userEvent.keyboard(chars[0].textContent!)
+        await user.keyboard(chars[1].textContent!)
+        await user.keyboard('{Backspace}')
+        await user.keyboard(chars[0].textContent!)
+
         expect(chars[0]).toHaveStyleRule('color', 'var(--color-fixed)')
       })
 
@@ -68,12 +74,12 @@ describe('Challenge component', () => {
         expect(chars[0]).toHaveStyleRule('color', 'var(--color-fg)')
       })
 
-      it('should have missed styles', () => {
+      it('should have missed styles', async () => {
         const word = useText.getState().words[0]
         const chars = screen.getAllByTestId('challengeChar')
 
-        userEvent.keyboard(chars[0].textContent!)
-        userEvent.keyboard(' ')
+        await user.keyboard(chars[0].textContent!)
+        await user.keyboard(' ')
 
         chars.slice(1, word.length).forEach(char => {
           expect(char).toHaveStyleRule('text-decoration', 'underline var(--color-error)')
@@ -81,12 +87,12 @@ describe('Challenge component', () => {
         })
       })
 
-      it('should print the extra typed chars', () => {
+      it('should print the extra typed chars', async () => {
         const word = useText.getState().words[0].join('')
         const extra = 'some-extra-chars'
 
-        userEvent.keyboard(word)
-        userEvent.keyboard(extra)
+        await user.keyboard(word)
+        await user.keyboard(extra)
 
         const chars = screen.getAllByTestId('challengeChar')
         chars.slice(word.length, extra.length).forEach(char => {

@@ -1,3 +1,6 @@
+/// <reference types="vitest" />
+/// <reference types="Vite/client" />
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgrPlugin from 'vite-plugin-svgr'
@@ -14,4 +17,11 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    root: 'src',
+    setupFiles: '__test__/setupTests.ts',
+    testTimeout: 15000,
+  },
 })
