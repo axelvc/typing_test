@@ -15,8 +15,6 @@ export const TextBox = styled.div`
 
 export const Input = styled.input`
   position: absolute;
-  width: 0;
-  height: 0;
   opacity: 0;
 `
 
