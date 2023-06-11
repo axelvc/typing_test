@@ -201,6 +201,10 @@ export default function Challenge() {
           type="text"
           data-testid="challengeInput"
           autoFocus
+          autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck="false"
           ref={inputBox}
           value={currentInput}
           onCopy={ev => ev.preventDefault()}
