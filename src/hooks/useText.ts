@@ -36,12 +36,14 @@ export default create<State>(set => ({
         let error = false
 
         if (value.length > inputLength) {
-          const inputChar = value.at(-1)
-          const char = s.words[inputIdx].at(inputLength)
+          for (let i = inputLength; i < value.length; i +=1) {
+            const inputChar = value[i]
+            const char = s.words[inputIdx][i]
 
-          if (char !== inputChar) {
-            error = true
-            s.wrongs[inputIdx][inputLength] = true
+            if (char !== inputChar) {
+              error = true
+              s.wrongs[inputIdx][i] = true
+            }
           }
         }
 
